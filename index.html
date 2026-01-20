@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Eaglercraft</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+
+    <meta name="description" content="Eaglercraft is real Minecraft 1.5.2 that you can play in any regular web browser." />
+    <meta name="author" content="lax1dude" />
+
+    <script src="classes.js"></script>
+    <script src="eagswebrtc.js"></script>
+    <script src="/js/main.js"></script>
+
+    <script>
+      if (document.location.href.startsWith("file:")) {
+        alert(
+          "You must host this over HTTP/HTTPS. Opening the file directly will not work."
+        );
+      } else {
+        window.addEventListener("load", function () {
+
+          const relayId = Math.floor(Math.random() * 3);
+
+          window.eaglercraftOpts = {
+            container: "game_frame",
+            assetsURI: "assets.epk",
+            serverWorkerURI: "worker_bootstrap.js",
+            worldsFolder: "MAIN",
+
+            servers: [
+              {
+                serverName: "Asspixel",
+                serverAddress: "wss://web.asspixel.net/CAP/",
+                hideAddress: false
+              }
+            ],
+
+            relays: [
+              {
+                addr: "wss://relay.deev.is/",
+                name: "lax1dude relay #1",
+                primary: relayId === 0
+              },
+              {
+                addr: "wss://relay.lax1dude.net/",
+                name: "lax1dude relay #2",
+                primary: relayId === 1
+              },
+              {
+                addr: "wss://relay.shhnowisnottheti.me/",
+                name: "ayunami relay #1",
+                primary: relayId === 2
+              }
+            ],
+
+            mainMenu: {
+              splashes: [
+                "CAT",
+                "CAT",
+                "CAT",
+                "CAT"
+              ],
+              eaglerLogo: false
+            }
+          };
+
+          /* ==========================================================
+             FORCE SHOW HIDDEN LAN SERVERS (CLIENT-SIDE ONLY)
+             This overrides "hidden = true" so YOU can see them
+             ========================================================== */
+
+          const originalPush = Array.prototype.push;
+          Array.prototype.push = function (...items) {
+            items.forEach(item => {
+              if (item && typeof item === "object" && item.hideAddress === true) {
+                item.hideAddress = false;
+                console.log(
+                  "[EAGLERCRAFT] Revealed hidden LAN server:",
+                  item.serverName || "(LAN)",
+                  item.serverAddress
+                );
+              }
+            });
+            return originalPush.apply(this, items);
+          };
+
+          /* ========================================================== */
+
+          main();
+        });
+      }
+    </script>
+  </head>
+
+  <body
+    id="game_frame"
+    style="margin: 0; width: 100vw; height: 100vh;"
+  ></body>
+</html>
